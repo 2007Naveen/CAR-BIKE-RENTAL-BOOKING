@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const api = axios.create({ baseURL: "http://localhost:5000/api" });
+const api = axios.create({ baseURL: `${import.meta.env.VITE_API_URL}/api` });
 
 function MyBookings({ user, onBack }) {
   const [bookings, setBookings] = useState([]);
