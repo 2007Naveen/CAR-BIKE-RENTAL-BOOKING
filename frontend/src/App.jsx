@@ -97,12 +97,12 @@ function App() {
   };
 
   const leaveAdmin = () => {
-    window.location.hash = "#home";
+    window.location.assign("/#home");
   };
 
   const enterAdminDashboard = (authenticatedUser) => {
     setUser(authenticatedUser);
-    window.location.hash = "#/admin-dashboard";
+    window.location.assign("/#/admin-dashboard");
   };
 
   if (page === "login") return <Login onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onRegister={() => setPage("register")} />;
@@ -127,7 +127,7 @@ function App() {
           <button className="nav-link-button" onClick={() => setPage("home")}>Home</button>
           <a href="#fleet">Fleet</a>
           <a href="#why-us">Why us</a>
-          <button className="admin-nav-button" onClick={() => { window.location.hash = "#/admin"; }}>Admin Login</button>
+          <button className="admin-nav-button" onClick={() => window.location.assign("/#/admin")}>Admin Login</button>
           {user ? <><button className="nav-link-button" onClick={() => setPage("bookings")}>My bookings</button>{user.role === "admin" && <button className="nav-link-button" onClick={() => setPage("admin")}>Admin</button>}<button className="nav-cta" onClick={signOut}>Sign out</button></> : <button className="nav-cta" onClick={() => setPage("login")}>Sign in <ArrowRight size={16} /></button>}
         </div>
       </nav>
