@@ -98,6 +98,8 @@ input:focus { border-color: var(--orange); }
 
 .nav-link-button { border: 0; padding: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; }
 .nav-link-button:hover { color: var(--ink); }
+.admin-nav-button { padding: 9px 13px; border: 1px solid var(--orange); border-radius: 3px; background: transparent; color: var(--orange); cursor: pointer; font-size: 12px; font-weight: 700; }
+.admin-nav-button:hover { background: var(--orange); color: var(--white); }
 .auth-page, .dashboard-page { min-height: 100vh; padding: 60px 7vw; background: var(--cream); }
 .auth-panel { width: min(100%, 500px); margin: 0 auto; padding: 45px; background: white; border: 1px solid var(--line); }
 .back-link { margin-bottom: 65px; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
