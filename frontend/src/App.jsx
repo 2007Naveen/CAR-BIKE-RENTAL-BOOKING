@@ -108,7 +108,6 @@ function App() {
   if (page === "login") return <Login onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onRegister={() => setPage("register")} />;
   if (page === "register") return <Register onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onLogin={() => setPage("login")} />;
   if (page === "bookings" && user) return <MyBookings user={user} onBack={() => setPage("home")} />;
-  if (page === "admin" && user?.role === "admin") return <AdminDashboard onBack={() => setPage("home")} />;
   if (isAdminDashboardPath || isAdminLoginPath) {
     if (user?.role === "admin") return <AdminDashboard onBack={leaveAdmin} />;
     if (isAdminDashboardPath || isAdminLoginPath) {
@@ -128,7 +127,7 @@ function App() {
           <a href="#fleet">Fleet</a>
           <a href="#why-us">Why us</a>
           <button className="admin-nav-button" onClick={() => window.location.assign("/#/admin")}>Admin Login</button>
-          {user ? <><button className="nav-link-button" onClick={() => setPage("bookings")}>My bookings</button>{user.role === "admin" && <button className="nav-link-button" onClick={() => setPage("admin")}>Admin</button>}<button className="nav-cta" onClick={signOut}>Sign out</button></> : <button className="nav-cta" onClick={() => setPage("login")}>Sign in <ArrowRight size={16} /></button>}
+          {user ? <><button className="nav-link-button" onClick={() => setPage("bookings")}>My bookings</button><button className="nav-cta" onClick={signOut}>Sign out</button></> : <button className="nav-cta" onClick={() => setPage("login")}>Sign in <ArrowRight size={16} /></button>}
         </div>
       </nav>
 

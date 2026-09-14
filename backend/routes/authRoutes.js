@@ -37,7 +37,18 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email?.toLowerCase().trim() });
+    const normalizedEmail = email?.toLowerCase().trim();
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if (normalizedEmail === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+      const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+      user = await User.findOneAndUpdate(
+        { email: normalizedEmail },
+        { name: "RideRent Admin", email: normalizedEmail, password: passwordHash, role: "admin" },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
+
     const validPassword = user && await bcrypt.compare(password || "", user.password);
 
     if (!validPassword) {
