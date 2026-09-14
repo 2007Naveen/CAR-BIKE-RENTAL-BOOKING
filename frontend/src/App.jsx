@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { ArrowRight, Bike, CarFront, Check, MapPin, X } from "lucide-react";
+import { ArrowRight, Bike, CarFront, Check, MapPin, Menu, X } from "lucide-react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyBookings from "./pages/MyBookings";
@@ -22,9 +22,10 @@ const initialForm = {
 
 function App() {
   const savedAuth = JSON.parse(localStorage.getItem("riderent-auth") || "null");
-  const routePath = window.location.hash.startsWith("#/")
+  const getRoutePath = () => window.location.hash.startsWith("#/")
     ? window.location.hash.slice(1).split("?")[0]
     : window.location.pathname;
+  const [routePath, setRoutePath] = useState(getRoutePath);
   const isAdminLoginPath = routePath === "/admin";
   const isAdminDashboardPath = routePath === "/admin-dashboard";
   const [vehicles, setVehicles] = useState([]);
@@ -35,6 +36,19 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState("home");
   const [user, setUser] = useState(savedAuth?.user || null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleHashChange = () => setRoutePath(getRoutePath());
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (isAdminDashboardPath && user?.role !== "admin") {
+      window.location.hash = "/admin";
+    }
+  }, [isAdminDashboardPath, user]);
 
   useEffect(() => {
     api.get("/vehicles?available=true")
@@ -94,25 +108,34 @@ function App() {
     localStorage.removeItem("riderent-auth");
     setUser(null);
     setPage("home");
+    if (isAdminDashboardPath) window.location.hash = "home";
   };
 
   const leaveAdmin = () => {
-    window.location.assign("/#home");
+    window.location.hash = "home";
+    setPage("home");
   };
 
   const enterAdminDashboard = (authenticatedUser) => {
     setUser(authenticatedUser);
-    window.location.assign("/#/admin-dashboard");
+    window.location.hash = "/admin-dashboard";
   };
+
+  const navigateToAdmin = () => {
+    setMenuOpen(false);
+    window.location.hash = "/admin";
+  };
+
+  const closeMenu = () => setMenuOpen(false);
 
   if (page === "login") return <Login onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onRegister={() => setPage("register")} />;
   if (page === "register") return <Register onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onLogin={() => setPage("login")} />;
   if (page === "bookings" && user) return <MyBookings user={user} onBack={() => setPage("home")} />;
-  if (isAdminDashboardPath || isAdminLoginPath) {
-    if (user?.role === "admin") return <AdminDashboard onBack={leaveAdmin} />;
-    if (isAdminDashboardPath || isAdminLoginPath) {
-      return <AdminLogin onSuccess={enterAdminDashboard} onBack={leaveAdmin} />;
-    }
+  if (isAdminDashboardPath && user?.role === "admin") {
+    return <AdminDashboard onBack={leaveAdmin} />;
+  }
+  if (isAdminLoginPath || isAdminDashboardPath) {
+    return <AdminLogin onSuccess={enterAdminDashboard} onBack={leaveAdmin} />;
   }
 
   return (
@@ -122,12 +145,19 @@ function App() {
           <span className="brand-mark"><CarFront size={18} /></span>
           Ride<span>Rent</span>
         </a>
-        <div className="nav-links">
-          <button className="nav-link-button" onClick={() => setPage("home")}>Home</button>
-          <a href="#fleet">Fleet</a>
-          <a href="#why-us">Why us</a>
-          <button className="admin-nav-button" onClick={() => window.location.assign("/#/admin")}>Admin Login</button>
-          {user ? <><button className="nav-link-button" onClick={() => setPage("bookings")}>My bookings</button><button className="nav-cta" onClick={signOut}>Sign out</button></> : <button className="nav-cta" onClick={() => setPage("login")}>Sign in <ArrowRight size={16} /></button>}
+        <button className="menu-toggle" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle navigation menu" aria-expanded={menuOpen}>
+          {menuOpen ? <X size={21} /> : <Menu size={21} />}
+        </button>
+        <div className={menuOpen ? "nav-links menu-open" : "nav-links"}>
+          <button className="nav-link-button" onClick={() => { setPage("home"); closeMenu(); }}>Home</button>
+          <a href="#fleet" onClick={closeMenu}>Fleet</a>
+          <a href="#why-us" onClick={closeMenu}>Why us</a>
+          <button className="nav-link-button" onClick={() => { setPage(user ? "bookings" : "login"); closeMenu(); }}>My bookings</button>
+          <div className="nav-account-actions">
+            {user && <span className="nav-user-name">Hi, {user.name}</span>}
+            <button className="admin-nav-button" onClick={navigateToAdmin}>Admin Login</button>
+            {user ? <button className="nav-cta" onClick={signOut}>Sign out</button> : <button className="nav-cta" onClick={() => { setPage("login"); closeMenu(); }}>Sign in <ArrowRight size={16} /></button>}
+          </div>
         </div>
       </nav>
 
