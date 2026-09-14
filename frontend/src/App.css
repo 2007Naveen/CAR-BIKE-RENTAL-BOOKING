@@ -103,6 +103,9 @@ input:focus { border-color: var(--orange); }
 .back-link { margin-bottom: 65px; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
 .auth-panel h1, .dashboard-page h1 { margin: 0; font: 600 clamp(2.4rem, 5vw, 4.7rem)/.98 'Space Grotesk', sans-serif; letter-spacing: -2px; }
 .auth-copy, .dashboard-lead { max-width: 430px; margin: 20px 0 30px; color: var(--muted); line-height: 1.6; }
+.admin-auth-page { background: radial-gradient(circle at top, #d8e2c1 0, var(--cream) 36%, #e7b29d 100%); }
+.admin-login-icon { width: 58px; height: 58px; display: grid; place-items: center; margin-bottom: 22px; border-radius: 12px; background: var(--ink); color: var(--lime); }
+.admin-back-button { margin: 22px 0 0; }
 .auth-switch { margin-top: 24px; color: var(--muted); font-size: 13px; text-align: center; }
 .auth-switch button { padding: 0; border: 0; background: transparent; color: var(--orange); cursor: pointer; font-weight: 700; }
 .dashboard-inner { max-width: 1180px; margin: 0 auto; }

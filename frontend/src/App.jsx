@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 import "./App.css";
 
 const api = axios.create({
@@ -21,7 +22,11 @@ const initialForm = {
 
 function App() {
   const savedAuth = JSON.parse(localStorage.getItem("riderent-auth") || "null");
-  const isAdminPath = window.location.pathname === "/admin";
+  const routePath = window.location.hash.startsWith("#/")
+    ? window.location.hash.slice(1).split("?")[0]
+    : window.location.pathname;
+  const isAdminLoginPath = routePath === "/admin";
+  const isAdminDashboardPath = routePath === "/admin-dashboard";
   const [vehicles, setVehicles] = useState([]);
   const [filter, setFilter] = useState("all");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -92,16 +97,23 @@ function App() {
   };
 
   const leaveAdmin = () => {
-    window.location.assign("/");
+    window.location.hash = "#home";
+  };
+
+  const enterAdminDashboard = (authenticatedUser) => {
+    setUser(authenticatedUser);
+    window.location.hash = "#/admin-dashboard";
   };
 
   if (page === "login") return <Login onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onRegister={() => setPage("register")} />;
   if (page === "register") return <Register onSuccess={handleAuthSuccess} onBack={() => setPage("home")} onLogin={() => setPage("login")} />;
   if (page === "bookings" && user) return <MyBookings user={user} onBack={() => setPage("home")} />;
   if (page === "admin" && user?.role === "admin") return <AdminDashboard onBack={() => setPage("home")} />;
-  if (isAdminPath) {
+  if (isAdminDashboardPath || isAdminLoginPath) {
     if (user?.role === "admin") return <AdminDashboard onBack={leaveAdmin} />;
-    return <Login onSuccess={handleAuthSuccess} onBack={leaveAdmin} onRegister={() => setPage("register")} />;
+    if (isAdminDashboardPath || isAdminLoginPath) {
+      return <AdminLogin onSuccess={enterAdminDashboard} onBack={leaveAdmin} />;
+    }
   }
 
   return (
